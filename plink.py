@@ -1,4 +1,3 @@
-# from multiprocessing import freeze_support, Process
 import random
 import sys
 
@@ -12,8 +11,6 @@ import audio
 
 hidden_window = None
 window = None
-fileName = ""
-# player_proc = None
 player = audio.Player()
 
 
@@ -27,7 +24,7 @@ class MainWindow(QtGui.QMainWindow):
         self.setWindowIcon(QtGui.QIcon('icon.png'))
  
         self.__nextButton = QtGui.QPushButton('Next', self)
-        self.__nextButton.clicked.connect(self.next)
+        self.__nextButton.clicked.connect(player.next)
         self.setCentralWidget(self.__nextButton)
 
         openAction = QtGui.QAction('Open', self)
@@ -41,7 +38,6 @@ class MainWindow(QtGui.QMainWindow):
         self.show()
 
     def open(self):
-        global player
         try:
             fileNames = QtGui.QFileDialog.getOpenFileNames(
                 self, "Open", "/Users/dbenamy/Music", "Mp3 Files (*.mp3)")
@@ -50,17 +46,9 @@ class MainWindow(QtGui.QMainWindow):
                 return
 
             random.shuffle(self.__playlist)
-
-            # if player_proc:
-            #     player_proc.terminate()
-            # player_proc = Process(target=audio.play_files, args=(self.__playlist,))
-            # player_proc.start()
             player.play_files(self.__playlist)
         except Exception, e:
             QtGui.QMessageBox.critical(self, "Open error", e.message)
-
-    def next(self, event):
-        player.next()
 
     def changeEvent(self, event):
         if (event.type() == QtCore.QEvent.WindowStateChange and
@@ -91,8 +79,6 @@ class Tray:
 
 
 if __name__ == '__main__':
-    # freeze_support() # needed for py2exe
-
     app = QtGui.QApplication(sys.argv)
     app.setQuitOnLastWindowClosed(False)
 
@@ -102,6 +88,4 @@ if __name__ == '__main__':
     tray = Tray(parent=hidden_window)
  
     ret = app.exec_()
-    # if player_proc:
-    #     player_proc.terminate()
     sys.exit(ret)

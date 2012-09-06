@@ -19,12 +19,10 @@ class Player:
     def next(self):
         self.__stop_file_event.set()
 
-    # @staticmethod
     def _play_files_thread(self, filenames):
         for fn in filenames:
             self._play_file(fn)
 
-    # @staticmethod
     def _play_file(self, filename):
         extension = str.split(filename, '.')[-1].lower()
         demux = muxer.Demuxer(extension)
