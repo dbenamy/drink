@@ -19,11 +19,12 @@ class DrinkApp(QtGui.QApplication):
         self.__db = DB()
 
         self.__player.songDone.connect(lambda: logging.debug('player song done'))
-        self.__window.newPlaylist.connect(lambda songs: logging.debug('window new playlist %s' % songs))
+        self.__window.playSong.connect(lambda path: logging.debug('window play song %s' % path))
         self.__window.controls.playButton.clicked.connect(lambda: logging.debug('window play'))
         self.__window.controls.nextButton.clicked.connect(lambda: logging.debug('window next'))
 
         self.__player.songDone.connect(self.playNextRandSong)
+        self.__window.playSong.connect(self.__player.play_file)
         self.__window.controls.playButton.clicked.connect(self.playNextRandSong)
         self.__window.controls.nextButton.clicked.connect(self.playNextRandSong)
 

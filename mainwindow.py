@@ -16,7 +16,7 @@ class Controls(QtGui.QWidget):
 
 
 class MainWindow(QtGui.QMainWindow):
-    newPlaylist = QtCore.pyqtSignal(list)
+    playSong = QtCore.pyqtSignal(str) # arg is path to file
 
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -38,10 +38,8 @@ class MainWindow(QtGui.QMainWindow):
 
     def open(self):
         try:
-            fileNames = QtGui.QFileDialog.getOpenFileNames(
+            fileName = QtGui.QFileDialog.getOpenFileName(
                 self, "Open", "/Users/dbenamy/Music", "Mp3 Files (*.mp3)")
-            playlist = [str(fn) for fn in fileNames]
-            random.shuffle(playlist)
-            self.newPlaylist.emit(playlist)
+            self.playSong.emit(fileName)
         except Exception, e:
             QtGui.QMessageBox.critical(self, "Open error", e.message)
