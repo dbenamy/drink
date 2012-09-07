@@ -3,6 +3,18 @@ import random
 from PyQt4 import QtGui
 from PyQt4 import QtCore
 
+class Controls(QtGui.QWidget):
+    def __init__(self, parent):        
+        super(Controls, self).__init__(parent)
+        self.layout = QtGui.QHBoxLayout(self)
+
+        self.playButton = QtGui.QPushButton('Play', self)
+        self.layout.addWidget(self.playButton)
+
+        self.nextButton = QtGui.QPushButton('Next', self)
+        self.layout.addWidget(self.nextButton)
+
+
 class MainWindow(QtGui.QMainWindow):
     newPlaylist = QtCore.pyqtSignal(list)
 
@@ -13,14 +25,14 @@ class MainWindow(QtGui.QMainWindow):
         self.setWindowTitle('Drink')
         self.setWindowIcon(QtGui.QIcon('icon.png'))
  
-        self.nextButton = QtGui.QPushButton('Next', self)
-        self.setCentralWidget(self.nextButton)
-
         openAction = QtGui.QAction('Open', self)
         openAction.triggered.connect(self.open)
  
         menubar = self.menuBar()
         file = menubar.addAction(openAction)
+
+        self.controls = Controls(self)
+        self.setCentralWidget(self.controls)
  
         self.show()
 
