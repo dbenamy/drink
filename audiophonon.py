@@ -37,9 +37,7 @@ class Player(QtCore.QObject):
         # the data into memory and strip out the id3 tag before playing it.
         # Thanks to http://stackoverflow.com/questions/10560349/direct-show-9-phonon-error-pins-cannot-connect
         data = file(path, 'rb').read()
-        print len(data)
         data = self.__stripId3(data)
-        print len(data)
         qbuffer = QBuffer(self.mediaObject)
         qbuffer.setData(data)
         self.mediaObject.setCurrentSource(Phonon.MediaSource(qbuffer))

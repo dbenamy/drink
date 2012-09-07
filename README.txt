@@ -1,3 +1,3 @@
 Install
-* python 2.6 32 bit
+* python 2
 * pyqt 4 - http://www.riverbankcomputing.co.uk/software/pyqt/download
