@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import logging
 import sys
 
@@ -8,9 +10,8 @@ import audiophonon as audio
 from db import DB
 from dirwatcher import DirWatcher
 from mainwindow import MainWindow
-from playlist import Playlist
 
-MUSIC_DIR = '/Users/dbenamy/Music'
+MUSIC_DIR = '/home/dbenamy/Music'
 
 class DrinkApp(QtGui.QApplication):
     def __init__(self, argv):
