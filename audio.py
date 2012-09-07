@@ -1,41 +1,41 @@
-#!/bin/env python
-
 import time, wave, string, os, sys, threading
 
 import pymedia.audio.acodec as acodec
 import pymedia.audio.sound as sound
 import pymedia.muxer as muxer
+from PyQt4 import QtCore
 
 class StopPlayThread(Exception):
     pass
 
-class Player:
+class Player(QtCore.QObject):
+    songDone = QtCore.pyqtSignal() 
+
     def __init__(self):
+        super(Player, self).__init__()
         self.__thread = None
         self.__stop_file_event = threading.Event()
-        self.__stop_all_files_event = threading.Event()
 
-    def play_files(self, filenames):
-        if self.__thread and self.__thread.is_alive():
-            self.__stop_all_files_event.set()
-            while self.__thread.is_alive():
-                time.sleep(0.01)
-        self.__thread = threading.Thread(target=self._play_files_thread, args=(filenames,))
+    def play_file(self, filename):
+        print 'player play file %s' % filename
+        self.stop()
+        print 'player creating new thread'
+        self.__thread = threading.Thread(target=self._play_file, args=(filename,))
         self.__thread.daemon = True
         self.__thread.start()
 
-    def next(self):
-        self.__stop_file_event.set()
-
-    def _play_files_thread(self, filenames):
-        try:
-            for fn in filenames:
-                self._play_file(fn)
-        except StopPlayThread:
-            pass
+    def stop(self):
+        if self.__thread and self.__thread.is_alive():
+            print "player stopping active thread"
+            self.__stop_file_event.set()
+            while self.__thread.is_alive():
+                time.sleep(0.01)
+        if self.__thread:
+            self.__thread.join()
+        self.__stop_file_event.clear()
 
     def _play_file(self, filename):
-        extension = str.split(filename, '.')[-1].lower()
+        extension = str(filename).split('.')[-1].lower()
         demux = muxer.Demuxer(extension)
         decoder = None
         snd = None
@@ -58,15 +58,13 @@ class Player:
                     snd.play(frame_pcm.data)
 
                     if self.__stop_file_event.is_set():
-                        self.__stop_file_event.clear()
                         return
-                    if self.__stop_all_files_event.is_set():
-                        self.__stop_all_files_event.clear()
-                        raise StopPlayThread()
+
+        self.songDone.emit()
 
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         print "Usage: %s <filename>" % sys.argv[0]
     else:
-        Player()._play_file(sys.argv[1])
+        Player().play_file(sys.argv[1])
