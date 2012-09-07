@@ -9,10 +9,7 @@ import audio
 # When I'm ready to save settings and/or db, create a qt settings object, set the format to ini, save it, get its path, and create a sqlite db in the same dir.
 # http://www.riverbankcomputing.co.uk/static/Docs/PyQt4/html/qsettings.html
 
-hidden_window = None
-window = None
 player = audio.Player()
-
 
 class MainWindow(QtGui.QMainWindow):
  
@@ -20,7 +17,7 @@ class MainWindow(QtGui.QMainWindow):
         QtGui.QMainWindow.__init__(self, parent)
         self.resize(400, 150)
         self.move(0, 0)
-        self.setWindowTitle('Plink')
+        self.setWindowTitle('Drink')
         self.setWindowIcon(QtGui.QIcon('icon.png'))
  
         self.__nextButton = QtGui.QPushButton('Next', self)
@@ -33,8 +30,6 @@ class MainWindow(QtGui.QMainWindow):
         menubar = self.menuBar()
         file = menubar.addAction(openAction)
  
-        self.minimizing = False
-
         self.show()
 
     def open(self):
@@ -50,42 +45,8 @@ class MainWindow(QtGui.QMainWindow):
         except Exception, e:
             QtGui.QMessageBox.critical(self, "Open error", e.message)
 
-    def changeEvent(self, event):
-        if (event.type() == QtCore.QEvent.WindowStateChange and
-            self.windowState() & QtCore.Qt.WindowMinimized):
-            self.minimizing = True
-            self.close()
-        QtGui.QWidget.changeEvent(self, event)
-
-    def closeEvent(self, event):
-        if self.minimizing:
-            window = None
-        else:
-            QtCore.QCoreApplication.instance().quit()
-
-
-class Tray:
-
-    def __init__(self, parent):
-        self.sysTray = QtGui.QSystemTrayIcon(parent=parent)
-        self.sysTray.setIcon(QtGui.QIcon('icon.png'))
-        self.sysTray.setVisible(True)
-        window.connect(self.sysTray, QtCore.SIGNAL("activated(QSystemTrayIcon::ActivationReason)"), self.sysTrayClicked)
-
-    def sysTrayClicked(self, reason):
-        global window
-        if window is None:
-            window = MainWindow(parent=hidden_window)
-
-
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
-    app.setQuitOnLastWindowClosed(False)
-
-    global hidden_window, window, tray #, player_proc
-    hidden_window = QtGui.QMainWindow()
-    window = MainWindow(parent=hidden_window)
-    tray = Tray(parent=hidden_window)
- 
+    window = MainWindow()
     ret = app.exec_()
     sys.exit(ret)
