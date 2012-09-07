@@ -1,21 +1,29 @@
 import random
 
-from PyQt4 import QtGui
+from PyQt4.QtGui import (
+    QWidget, QHBoxLayout, QPushButton, QMainWindow, QIcon, QAction, QShortcut,
+    QKeySequence, QFileDialog, QMessageBox)
 from PyQt4 import QtCore
 
-class Controls(QtGui.QWidget):
+class Controls(QWidget):
     def __init__(self, parent):        
         super(Controls, self).__init__(parent)
-        self.layout = QtGui.QHBoxLayout(self)
+        self.layout = QHBoxLayout(self)
 
-        self.playButton = QtGui.QPushButton('Play', self)
-        self.layout.addWidget(self.playButton)
+        self.playPauseButton = QPushButton('Play', self) # TODO implement pausing
+        self.layout.addWidget(self.playPauseButton)
 
-        self.nextButton = QtGui.QPushButton('Next', self)
+        self.nextButton = QPushButton('Next', self)
         self.layout.addWidget(self.nextButton)
+        
+        self.__nextShortcut = QShortcut(QKeySequence.MoveToNextChar, self)
+        self.__nextShortcut.activated.connect(self.nextButton.click)
+
+        self.__playPauseShortcut = QShortcut(QKeySequence.fromString(' '), self)
+        self.__playPauseShortcut.activated.connect(self.playPauseButton.click)
 
 
-class MainWindow(QtGui.QMainWindow):
+class MainWindow(QMainWindow):
     playSong = QtCore.pyqtSignal(str) # arg is path to file
 
     def __init__(self, music_dir):
@@ -26,9 +34,9 @@ class MainWindow(QtGui.QMainWindow):
         self.resize(400, 150)
         self.move(0, 0)
         self.setWindowTitle('Drink')
-        self.setWindowIcon(QtGui.QIcon('icon.png'))
+        self.setWindowIcon(QIcon('icon.png'))
  
-        openAction = QtGui.QAction('Open', self)
+        openAction = QAction('Open', self)
         openAction.triggered.connect(self.open)
  
         menubar = self.menuBar()
@@ -36,13 +44,13 @@ class MainWindow(QtGui.QMainWindow):
 
         self.controls = Controls(self)
         self.setCentralWidget(self.controls)
- 
+
         self.show()
 
     def open(self):
         try:
-            fileName = QtGui.QFileDialog.getOpenFileName(
+            fileName = QFileDialog.getOpenFileName(
                 self, "Open", self.__music_dir, "Mp3 Files (*.mp3)")
             self.playSong.emit(fileName)
         except Exception, e:
-            QtGui.QMessageBox.critical(self, "Open error", e.message)
+            QMessageBox.critical(self, "Open error", e.message)
