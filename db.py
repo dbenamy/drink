@@ -26,7 +26,7 @@ class DB():
     def addSong(self, path):
         try:
             self.__cursor.execute('INSERT INTO songs (path) VALUES (?);', [path])
-            self.__commit()
+            self.commit()
         except sqlite3.IntegrityError, error:
             if 'column path is not unique' in error:
                 pass

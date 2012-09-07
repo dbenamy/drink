@@ -1,4 +1,5 @@
 import fnmatch
+import logging
 import os
 import sqlite3
 import threading
@@ -26,7 +27,10 @@ class DirWatcher(QtCore.QObject):
         for root, dirnames, filenames in os.walk(root_dir):
             for filename in fnmatch.filter(filenames, '*.mp3'):
                 path = os.path.join(root, filename)
-                print "Adding %s to db (if not there)" % path
-                db.addSong(path)
+                print "Adding to db (if not there): %s" % path
+                try:
+                    db.addSong(path)
+                except:
+                    logging.exception("Skipping %s" % path)
 
         print "%s songs in db" % db.numSongs()
