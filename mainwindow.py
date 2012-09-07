@@ -31,7 +31,7 @@ class MainWindow(QMainWindow):
 
         self.__music_dir = music_dir
 
-        self.resize(400, 150)
+        self.resize(400, 70)
         self.move(0, 0)
         self.setWindowTitle('Drink')
         self.setWindowIcon(QIcon('icon.png'))
