@@ -9,13 +9,15 @@ from dirwatcher import DirWatcher
 from mainwindow import MainWindow
 from playlist import Playlist
 
+MUSIC_DIR = '/Users/dbenamy/Music'
+
 class DrinkApp(QtGui.QApplication):
     def __init__(self, argv):
         super(DrinkApp, self).__init__(argv)
         
-        self.__window = MainWindow()
+        self.__window = MainWindow(MUSIC_DIR)
         self.__player = audio.Player()
-        self.__dirWatcher = DirWatcher('/Users/dbenamy/Music')
+        self.__dirWatcher = DirWatcher(MUSIC_DIR)
         self.__db = DB()
 
         self.__player.songDone.connect(lambda: logging.debug('player song done'))

@@ -18,8 +18,11 @@ class Controls(QtGui.QWidget):
 class MainWindow(QtGui.QMainWindow):
     playSong = QtCore.pyqtSignal(str) # arg is path to file
 
-    def __init__(self):
+    def __init__(self, music_dir):
         super(MainWindow, self).__init__()
+
+        self.__music_dir = music_dir
+
         self.resize(400, 150)
         self.move(0, 0)
         self.setWindowTitle('Drink')
@@ -39,7 +42,7 @@ class MainWindow(QtGui.QMainWindow):
     def open(self):
         try:
             fileName = QtGui.QFileDialog.getOpenFileName(
-                self, "Open", "/Users/dbenamy/Music", "Mp3 Files (*.mp3)")
+                self, "Open", self.__music_dir, "Mp3 Files (*.mp3)")
             self.playSong.emit(fileName)
         except Exception, e:
             QtGui.QMessageBox.critical(self, "Open error", e.message)
