@@ -22,15 +22,15 @@ class DirWatcher(QtCore.QObject):
         
     def scanDir(self, root_dir):
         db = DB()
-        print "%s songs in db" % db.numSongs()
+        logging.info("%s songs in db" % db.numSongs())
 
         for root, dirnames, filenames in os.walk(root_dir):
             for filename in fnmatch.filter(filenames, '*.mp3'):
                 path = os.path.join(root, filename)
-                print "Adding to db (if not there): %s" % path
+                logging.debug("Adding to db (if not there): %s" % path)
                 try:
                     db.addSong(path)
                 except:
                     logging.exception("Skipping %s" % path)
 
-        print "%s songs in db" % db.numSongs()
+        logging.info("%s songs in db" % db.numSongs())
