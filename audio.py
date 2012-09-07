@@ -6,12 +6,20 @@ import pymedia.audio.acodec as acodec
 import pymedia.audio.sound as sound
 import pymedia.muxer as muxer
 
+class StopPlayThread(Exception):
+    pass
+
 class Player:
     def __init__(self):
         self.__thread = None
         self.__stop_file_event = threading.Event()
+        self.__stop_all_files_event = threading.Event()
 
     def play_files(self, filenames):
+        if self.__thread and self.__thread.is_alive():
+            self.__stop_all_files_event.set()
+            while self.__thread.is_alive():
+                time.sleep(0.01)
         self.__thread = threading.Thread(target=self._play_files_thread, args=(filenames,))
         self.__thread.daemon = True
         self.__thread.start()
@@ -20,8 +28,11 @@ class Player:
         self.__stop_file_event.set()
 
     def _play_files_thread(self, filenames):
-        for fn in filenames:
-            self._play_file(fn)
+        try:
+            for fn in filenames:
+                self._play_file(fn)
+        except StopPlayThread:
+            pass
 
     def _play_file(self, filename):
         extension = str.split(filename, '.')[-1].lower()
@@ -49,6 +60,9 @@ class Player:
                     if self.__stop_file_event.is_set():
                         self.__stop_file_event.clear()
                         return
+                    if self.__stop_all_files_event.is_set():
+                        self.__stop_all_files_event.clear()
+                        raise StopPlayThread()
 
 
 if __name__ == '__main__':
