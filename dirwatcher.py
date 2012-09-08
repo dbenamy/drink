@@ -14,6 +14,11 @@ from db import DB
 # fs_watcher.directoryChanged.connect(lambda d: logging.debug('dir changed %s' % d))
 
 class DirWatcher(QtCore.QObject):
+    # Shit does not work well with 2 threads accessing the db, at least in
+    # linux. Proxy all inserts to the main thread where they're guarranteed
+    # to be serialized with db reads.
+    foundSongs = QtCore.pyqtSignal(list)
+
     def __init__(self, root):
         super(DirWatcher, self).__init__()
         self.__thread = threading.Thread(target=self.scanDir, args=(root,))
@@ -24,13 +29,19 @@ class DirWatcher(QtCore.QObject):
         db = DB()
         logging.info("%s songs in db" % db.numSongs())
 
+        toAdd = []
         for root, dirnames, filenames in os.walk(root_dir):
             for filename in fnmatch.filter(filenames, '*.mp3'):
                 path = os.path.join(root, filename)
                 logging.debug("Adding to db (if not there): %s" % path)
-                try:
-                    db.addSong(path)
-                except:
-                    logging.exception("Skipping %s" % path)
+
+                toAdd.append(path)
+                if len(toAdd) == 100:
+                    self.foundSongs.emit(toAdd)
+                    toAdd = []
+                    # When it's adding lots of song, it seems it can starve the
+                    # main thread. Sleep for a bit to prevent that.
+                    time/sleep(0.01)
+        self.foundSongs.emit(toAdd)
 
         logging.info("%s songs in db" % db.numSongs())

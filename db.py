@@ -26,7 +26,6 @@ class DB():
     def addSong(self, path):
         try:
             self.__cursor.execute('INSERT INTO songs (path) VALUES (?);', [path])
-            self.commit()
         except sqlite3.IntegrityError, error:
             if 'column path is not unique' in error:
                 pass
@@ -35,4 +34,8 @@ class DB():
 
     def randSong(self):
         self.__cursor.execute('SELECT path FROM songs ORDER BY RANDOM() LIMIT 1;')
-        return self.__cursor.fetchone()[0]
+        row = self.__cursor.fetchone()
+        if row is None:
+            return None
+        else:
+            return row[0]

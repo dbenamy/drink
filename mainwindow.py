@@ -10,6 +10,9 @@ class Controls(QWidget):
         super(Controls, self).__init__(parent)
         self.layout = QHBoxLayout(self)
 
+        self.openButton = QPushButton('Open', self)
+        self.layout.addWidget(self.openButton)
+
         self.playPauseButton = QPushButton('Play', self) # TODO implement pausing
         self.layout.addWidget(self.playPauseButton)
 
@@ -36,14 +39,10 @@ class MainWindow(QMainWindow):
         self.setWindowTitle('Drink')
         self.setWindowIcon(QIcon('icon.png'))
  
-        openAction = QAction('Open', self)
-        openAction.triggered.connect(self.open)
- 
-        menubar = self.menuBar()
-        file = menubar.addAction(openAction)
-
         self.controls = Controls(self)
         self.setCentralWidget(self.controls)
+
+        self.controls.openButton.clicked.connect(self.open)
 
         self.show()
 

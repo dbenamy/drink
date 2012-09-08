@@ -1,4 +1,5 @@
 import logging
+import platform
 import sys
 import time
 
@@ -17,7 +18,6 @@ class Player(QtCore.QObject):
         Phonon.createPath(self.mediaObject, self.audioOutput)
         
         self.mediaObject.stateChanged.connect(self.stateChanged)
-        self.mediaObject.finished.connect(lambda: logging.debug("mediaObject finished"))
         self.mediaObject.finished.connect(self.songDone.emit)
 
     def stateChanged(self, newState, oldState):
@@ -32,20 +32,27 @@ class Player(QtCore.QObject):
     def playFile(self, path):
         logging.debug("Player playing %s" % path)
         self.stop()
+        logging.debug("Player stopped.")
 
-        # On windows, directshow blows up if id3 tags aren't just right. Read
-        # the data into memory and strip out the id3 tag before playing it.
-        # Thanks to http://stackoverflow.com/questions/10560349/direct-show-9-phonon-error-pins-cannot-connect
-        data = file(path, 'rb').read()
-        data = self.__stripId3(data)
-        qbuffer = QBuffer(self.mediaObject)
-        qbuffer.setData(data)
-        self.mediaObject.setCurrentSource(Phonon.MediaSource(qbuffer))
-
-        # Phonon only reports the DS error when reading from path, not from
-        # buffer, so I might need this in the future.
-        # self.mediaObject.setCurrentSource(Phonon.MediaSource(path))
+        if platform.system().lower() == 'windows':
+            # On windows, directshow blows up if id3 tags aren't just right. Read
+            # the data into memory and strip out the id3 tag before playing it.
+            # Thanks to http://stackoverflow.com/questions/10560349/direct-show-9-phonon-error-pins-cannot-connect
+            data = file(path, 'rb').read()
+            data = self.__stripId3(data)
+            qbuffer = QBuffer(self.mediaObject)
+            qbuffer.setData(data)
+            logging.debug("Player loaded song and stripped id3 tags.")
+            self.mediaObject.setCurrentSource(Phonon.MediaSource(qbuffer))
+            # Phonon only reports the DS error when reading from path, not from
+            # buffer, so to reproduce, use the following version.
+        else:
+            # On my linux box, it occasionally hangs when playing from a
+            # QBuffer so play directly from file.
+            # To reproduce, use the above code and hold down next.
+            self.mediaObject.setCurrentSource(Phonon.MediaSource(path))
         
+        logging.debug("Player playing.")
         self.mediaObject.play()
 
     def stop(self):
