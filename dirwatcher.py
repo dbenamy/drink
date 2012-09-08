@@ -3,6 +3,7 @@ import logging
 import os
 import sqlite3
 import threading
+import time
 
 from PyQt4 import QtCore
 
@@ -41,7 +42,5 @@ class DirWatcher(QtCore.QObject):
                     toAdd = []
                     # When it's adding lots of song, it seems it can starve the
                     # main thread. Sleep for a bit to prevent that.
-                    time/sleep(0.01)
+                    time.sleep(0.01)
         self.foundSongs.emit(toAdd)
-
-        logging.info("%s songs in db" % db.numSongs())

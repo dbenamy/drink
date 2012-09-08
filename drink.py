@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 
 import logging
 import sys
@@ -53,6 +53,7 @@ class DrinkApp(QApplication):
             except:
                 logging.exception("Skipping %s" % path)
         self.__db.commit()
+        logging.info("%s songs in db" % self.__db.numSongs())
 
 
 if __name__ == '__main__':
