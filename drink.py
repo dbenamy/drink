@@ -11,7 +11,7 @@ from db import DB
 from dirwatcher import DirWatcher
 from mainwindow import MainWindow
 
-MUSIC_DIR = '/home/dbenamy/Music'
+MUSIC_DIR = u'/Users/dbenamy/Music'
 
 class DrinkApp(QApplication):
     def __init__(self, argv):
