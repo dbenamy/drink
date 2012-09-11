@@ -12,6 +12,8 @@ class Player(QtCore.QObject):
 
     def __init__(self):
         super(Player, self).__init__()
+
+        self.__qbuffer = None
         
         self.mediaObject = Phonon.MediaObject(self)
         self.audioOutput = Phonon.AudioOutput(Phonon.MusicCategory, self)
@@ -40,10 +42,10 @@ class Player(QtCore.QObject):
             # Thanks to http://stackoverflow.com/questions/10560349/direct-show-9-phonon-error-pins-cannot-connect
             data = file(path, 'rb').read()
             data = self.__stripId3(data)
-            qbuffer = QBuffer(self.mediaObject)
-            qbuffer.setData(data)
+            self.__qbuffer = QBuffer(self.mediaObject)
+            self.__qbuffer.setData(data)
             logging.debug("Player loaded song and stripped id3 tags.")
-            self.mediaObject.setCurrentSource(Phonon.MediaSource(qbuffer))
+            self.mediaObject.setCurrentSource(Phonon.MediaSource(self.__qbuffer))
             # Phonon only reports the DS error when reading from path, not from
             # buffer, so to reproduce, use the following version.
         else:
@@ -58,6 +60,10 @@ class Player(QtCore.QObject):
     def stop(self):
         if self.mediaObject.state() == Phonon.PlayingState:
             self.mediaObject.stop()
+            if self.__qbuffer is not None:
+              # The qbuffer isn't being garbage collected. I don't know if I'm
+              # doing something wrong or it's a bug. Either way, delete it.
+              self.__qbuffer.deleteLater()
 
     def __stripId3(self, data):
         # ID3 v1.x
