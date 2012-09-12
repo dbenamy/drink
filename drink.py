@@ -8,7 +8,7 @@ from PyQt4.QtGui import QApplication, QMessageBox
 # import audiopymedia as audio It's less well supported but I'm hanging on to it until I'm sure that phonon works well.
 import audiophonon as audio
 from db import DB
-from dirwatcher import DirWatcher
+from indexer import Indexer
 from mainwindow import MainWindow
 
 MUSIC_DIR = u'/Users/dbenamy/Music'
@@ -19,7 +19,7 @@ class DrinkApp(QApplication):
         
         self.__window = MainWindow(MUSIC_DIR)
         self.__player = audio.Player()
-        self.__dirWatcher = DirWatcher(MUSIC_DIR)
+        self.__dirWatcher = Indexer(MUSIC_DIR)
         self.__db = DB()
 
         self.__player.songDone.connect(lambda: logging.debug('player song done'))
