@@ -11,7 +11,7 @@ class DB():
         settings.setValue('dummy', 0)
         settings.sync() # Ensure settings dir is created.
         settingsDir = os.path.dirname(str(settings.fileName()))
-        dbPath = os.path.join(settingsDir, 'settings.sqlite')
+        dbPath = os.path.join(settingsDir, 'Drink Audio.sqlite')
         self.__conn = sqlite3.connect(dbPath)
         self.__cursor = self.__conn.cursor()
         self.__cursor.execute('CREATE TABLE IF NOT EXISTS songs (path text unique);')
@@ -25,7 +25,7 @@ class DB():
 
     def addSong(self, path):
         try:
-            self.__cursor.execute('INSERT INTO songs (path) VALUES (?);', [path])
+            self.__cursor.execute('INSERT INTO songs (path) VALUES (?);', (path,))
         except sqlite3.IntegrityError, error:
             if 'column path is not unique' in error:
                 pass
