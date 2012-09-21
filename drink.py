@@ -21,16 +21,17 @@ class DrinkApp(QApplication):
         
         self.__settings = QSettings(QSettings.IniFormat, QSettings.UserScope,
                                     "Drink", "Drink")
-        musicDir = self.__settings.value('MusicDir')
-        if musicDir is None:
-            musicDir = expanduser('~/Music')
+        musicDir = expanduser('~/Music')
+        if self.__settings.contains('MusicDir'):
+            musicDir = self.__settings.value('MusicDir')
+        else:
             self.__settings.setValue('MusicDir', musicDir)
             self.__settings.sync()
 
         # Settings must be sync()ed so on 1st run, settings dir is created before setting up db.
         settingsDir = os.path.dirname(str(self.__settings.fileName()))
         dbPath = os.path.join(settingsDir, 'Drink Audio.sqlite')
-
+        
         self.__window = MainWindow(musicDir)
         self.__player = audio.Player()
         self.__dirWatcher = Indexer(musicDir)
