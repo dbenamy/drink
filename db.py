@@ -4,15 +4,8 @@ import sqlite3
 from PyQt4 import QtCore
 
 class DB():
-    def __init__(self):
-        settings = QtCore.QSettings(QtCore.QSettings.IniFormat,
-                                    QtCore.QSettings.UserScope,
-                                    "Daniel Benamy", "Drink")
-        settings.setValue('dummy', 0)
-        settings.sync() # Ensure settings dir is created.
-        settingsDir = os.path.dirname(str(settings.fileName()))
-        dbPath = os.path.join(settingsDir, 'Drink Audio.sqlite')
-        self.__conn = sqlite3.connect(dbPath)
+    def __init__(self, path):
+        self.__conn = sqlite3.connect(path)
         self.__cursor = self.__conn.cursor()
         self.__cursor.execute('CREATE TABLE IF NOT EXISTS songs (path text unique);')
 
@@ -25,10 +18,10 @@ class DB():
 
     def addSong(self, path):
         try:
-            print type(path)
+            print(type(path))
             self.__cursor.execute('INSERT INTO songs (path) VALUES (?);', (path,))
-        except sqlite3.IntegrityError, error:
-            if 'column path is not unique' in error:
+        except sqlite3.IntegrityError as error:
+            if 'column path is not unique' in str(error):
                 pass
             else:
                 raise

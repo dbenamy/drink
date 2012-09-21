@@ -7,8 +7,6 @@ import time
 
 from PyQt4.QtCore import pyqtSignal, QObject
 
-from db import DB
-
 # Maybe someday I'll do dir watching. If so, these links might be handy. Until
 # then, re-indexing once an hour is good enough.
 # http://timgolden.me.uk/python/win32_how_do_i/watch_directory_for_changes.html
@@ -37,9 +35,6 @@ class Indexer(QObject):
 
     def scanDir(self):
         logging.info("Indexing %s" % self.__rootDir)
-        db = DB()
-        logging.info("%s songs in db" % db.numSongs())
-
         toAdd = []
         for root, dirnames, filenames in os.walk(self.__rootDir):
             for filename in fnmatch.filter(filenames, '*.mp3'):

@@ -51,5 +51,5 @@ class MainWindow(QMainWindow):
             fileName = QFileDialog.getOpenFileName(
                 self, "Open", self.__music_dir, "Mp3 Files (*.mp3)")
             self.playSong.emit(fileName)
-        except Exception, e:
-            QMessageBox.critical(self, "Open error", e.message)
+        except Exception as error:
+            QMessageBox.critical(self, "Open error", error.message)

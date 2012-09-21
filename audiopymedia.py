@@ -17,16 +17,13 @@ class Player(QtCore.QObject):
         self.__stop_file_event = threading.Event()
 
     def playFile(self, filename):
-        print 'player play file %s' % filename
         self.stop()
-        print 'player creating new thread'
         self.__thread = threading.Thread(target=self._play_file, args=(filename,))
         self.__thread.daemon = True
         self.__thread.start()
 
     def stop(self):
         if self.__thread and self.__thread.is_alive():
-            print "player stopping active thread"
             self.__stop_file_event.set()
             while self.__thread.is_alive():
                 time.sleep(0.01)
@@ -65,6 +62,6 @@ class Player(QtCore.QObject):
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
-        print "Usage: %s <filename>" % sys.argv[0]
+        print("Usage: %s <filename>" % sys.argv[0])
     else:
         Player().playFile(sys.argv[1])
